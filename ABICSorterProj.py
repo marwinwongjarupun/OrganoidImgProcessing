@@ -25,7 +25,6 @@ blurred_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
 
 # Apply Otsu's thresholding
 _, image_thresh = cv2.threshold(blurred_image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-
 # Detect contours
 contours, hierarchy = cv2.findContours(image_thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 

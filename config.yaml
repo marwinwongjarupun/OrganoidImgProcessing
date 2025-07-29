@@ -1,0 +1,6 @@
+path: /Users/karthik/Desktop/trainingimgs
+train: images/train
+val: images/val
+names:
+  0: droplet
+  1: organoid
