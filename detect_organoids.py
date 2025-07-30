@@ -47,9 +47,36 @@ for i, result in enumerate(results):
     # Print counts and channel decision
     print(f"\nImage: {os.path.basename(img_path)}")
     print(f" - Organoids: {organoid_count}, Droplets: {droplet_count}")
+    
+    # Create a copy of the image for plotting
+    plot_img = img.copy()
 
     if organoid_count == 1:
-        print("Send to channel 1")
+        # Convert the image to grayscale
+        gray_image = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+        # Apply Gaussian blur to the grayscale image
+        blurred_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
+        # Apply Otsu's thresholding
+        _, image_thresh = cv2.threshold(blurred_image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+        # Detect contours
+        contours, hierarchy = cv2.findContours(image_thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        
+        # Draw contours on the copied image
+        cv2.drawContours(plot_img, contours, -1, (0, 255, 0), 2)  # Green 
+
+        
+        # Calculate diameter (assuming circular shape)
+        organoid_countour = contours[-1] # Assuming the last contour is the organoid
+        perimeter = cv2.arcLength(organoid_countour, True)
+        diameter = perimeter / np.pi  # Diameter from circumference
+        
+        pixel_micron_conversion  = float(input("Enter pixel to micron conversion factor: "))
+        diameter_microns = diameter * pixel_micron_conversion 
+
+        if diameter_microns > 100 and diameter_microns < 150:
+            print("Send to channel 1")
+        else:
+            print("Send to channel 2")
     else:
         print("Send to channel 2")
 
